@@ -4,7 +4,7 @@ FROM $BUILD_FROM
 
 COPY pihole.sh /
 RUN \
-  chmod +x pihole.sh \
+  chmod +x pihole.sh
   
 CMD [ "./pihole.sh" ]
 
