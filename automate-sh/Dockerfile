@@ -12,6 +12,7 @@ WORKDIR /data
 
 # Copy data for add-on
 COPY run.sh /
+COPY docker-compose.yml /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
