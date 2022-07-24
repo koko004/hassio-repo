@@ -1,6 +1,5 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
-COPY docker-pi-hole/ /
-RUN cd /docker-pi-hole
+COPY docker-compose.yml /
 CMD [ "docker-compose up" ]
 
