@@ -1,4 +1,4 @@
-name: "Pihole SH Installer
+name: "Pihole RUN Installer"
 description: "SH"
 version: "1.0.1"
 slug: "piholesh"
