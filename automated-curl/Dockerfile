@@ -5,6 +5,7 @@ RUN \
     docker \
     docker-compose \
     curl \
+    ash \
     bash
 
 COPY pihole.sh /
