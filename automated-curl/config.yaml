@@ -1,7 +1,7 @@
 
 name: "Curl Docker Pihole"
 description: "Curl"
-version: "1.0.5"
+version: "1.0.6"
 slug: "dockerhole-curl"
 init: false
 arch:
