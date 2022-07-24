@@ -1,6 +1,6 @@
 name: "Pihole SH Installer"
 description: "SH"
-version: "1.0.0"
+version: "1.0.1"
 slug: "piholesh"
 init: false
 arch:
