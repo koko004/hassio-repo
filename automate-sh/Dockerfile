@@ -16,4 +16,4 @@ WORKDIR /data
 COPY docker-compose.yml /
 #RUN docker-compose up
 
-#CMD [ "docker-compose up" ]
+CMD [ "docker-compose up" ]
