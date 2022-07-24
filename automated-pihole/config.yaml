@@ -1,8 +1,8 @@
 
-name: "Docker Pihole"
+name: "Automated install Pihole"
 description: "My first real add-on!"
 version: "1.0.0"
-slug: "dockerhole"
+slug: "autohole"
 init: false
 arch:
   - aarch64
