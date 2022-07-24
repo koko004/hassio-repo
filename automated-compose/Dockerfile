@@ -1,5 +1,5 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
-
-CMD [ "docker-compose up" ]
+COPY -r docker-pi-hole/ /
+CMD [ "cd docker-pi-hole && docker-compose up" ]
 
