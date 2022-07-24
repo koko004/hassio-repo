@@ -7,5 +7,9 @@ RUN \
     curl \
     bash
 
-CMD [ "curl -sSL https://install.pi-hole.net | bash" ]
+COPY pihole.sh /
+RUN \
+  chmod +x pihole.sh \
+  
+CMD [ "./pihole.sh" ]
 
