@@ -5,7 +5,7 @@ RUN \
     docker \
     docker-compose \
     curl \
-    wget
+    bash
 
-CMD [ "curl -sSL https://install.pi-hole.net | sh" ]
+CMD [ "curl -sSL https://install.pi-hole.net | bash" ]
 
