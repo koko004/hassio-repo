@@ -7,5 +7,5 @@ RUN \
     curl \
     wget
 
-CMD [ "curl -sSL https://install.pi-hole.net | ash" ]
+CMD [ "curl -sSL https://install.pi-hole.net | sh" ]
 
