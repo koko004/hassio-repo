@@ -10,3 +10,8 @@ arch:
   - armhf
   - armv7
   - i386
+ports:
+ 80/tcp: 80
+ 53/tcp: 53
+ 53/udp: 53
+ 67/udp: 67
