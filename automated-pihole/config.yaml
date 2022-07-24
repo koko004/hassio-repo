@@ -1,6 +1,6 @@
 
 name: "Automated install Pihole"
-description: "My first real add-on!"
+description: "SH Version"
 version: "1.0.0"
 slug: "autohole"
 init: false
