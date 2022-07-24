@@ -2,4 +2,3 @@
 
 mkdir -p ~/.docker-compose/pihole
 cd ~/.docker-compose/pihole
-/.docker-compose/pihole$
