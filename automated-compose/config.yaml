@@ -1,0 +1,12 @@
+
+name: "Docker Compose Docker Pihole"
+description: "Docker-Compose"
+version: "1.0.0"
+slug: "dockerhole-compose"
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
