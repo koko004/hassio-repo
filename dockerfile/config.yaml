@@ -1,7 +1,7 @@
-name: "Pihole SH Installer
-description: "SH"
+name: "Cloned Pihole installer"
+description: "cloned"
 version: "1.0.0"
-slug: "piholesh"
+slug: "clonedpihole"
 init: false
 arch:
   - aarch64
