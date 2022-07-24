@@ -1,8 +1,8 @@
 
 name: "Clonado Pihole"
 description: "Docker-Clonado"
-version: "1.0.0"
-slug: "dockerholeclonado"
+version: "1.0.1"
+slug: "dockeclonado"
 init: false
 arch:
   - aarch64
