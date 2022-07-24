@@ -1,7 +1,7 @@
 name: "Command Docker Pihole Installer"
 description: "Command Docker Pihole Installer"
 version: "1.0.0"
-slug: "dockerhole-compose"
+slug: "command-pihole"
 init: false
 arch:
   - aarch64
