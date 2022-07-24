@@ -37,6 +37,12 @@ RUN apt-get update \
         lighttpd-mod-openssl \
         logrotate \
     && rm -rf /var/lib/apt/lists/*
+    
+    
+COPY docker-run.sh /
+RUN chmod a+x /docker-run.sh
+
+CMD [ "/docker-run.sh" ]
 
 # curl in armhf-buster's image has SSL issues. Running c_rehash fixes it.
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923479
