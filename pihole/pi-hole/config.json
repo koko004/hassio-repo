@@ -4,7 +4,7 @@
   "version": "dev",
   "slug": "pi-hole",
   "description": "The Pi-hole add-on is deprecated, use the AdGuard Home add-on instead.",
-  "url": "https://github.com/koko004/homeassistant-pihole-addon",
+  "url": "https://github.com/koko004/hassio-repo/tree/main/pihole",
   "webui": "[PROTO:ssl]://[HOST]:[PORT:4865]",
   "ingress": true,
   "ingress_port": 61478,
