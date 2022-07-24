@@ -1,8 +1,8 @@
 
-name: "Docker Compose Docker Pihole"
-description: "Docker-Compose"
+name: "Clonado Pihole"
+description: "Docker-Clonado"
 version: "1.0.0"
-slug: "dockerhole-compose"
+slug: "dockerholeclonado"
 init: false
 arch:
   - aarch64
@@ -10,3 +10,9 @@ arch:
   - armhf
   - armv7
   - i386
+startup: before
+ports:
+  80/tcp: 80
+  53/tcp: 53
+  53/udp: 53
+  67/udp: 67
