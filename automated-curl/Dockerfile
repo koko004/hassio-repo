@@ -1,12 +1,6 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
-RUN \
-  apk add --no-cache \
-    docker \
-    docker-compose \
-    curl \
-    ash \
-    bash
+
 
 COPY pihole.sh /
 RUN \
