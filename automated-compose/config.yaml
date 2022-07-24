@@ -1,7 +1,7 @@
 
 name: "Docker Compose Docker Pihole"
 description: "Docker-Compose"
-version: "1.0.0"
+version: "1.0.1"
 slug: "dockerhole-compose"
 init: false
 arch:
