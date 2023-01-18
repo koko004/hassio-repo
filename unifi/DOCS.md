@@ -1,4 +1,4 @@
-# Home Assistant Community Add-on: UniFi Network Application
+# HHome Assistant Community Add-on: UniFi Network Application
 
 This add-on runs Ubiquiti Networks' UniFi Network Application software, which
 allows you to manage your UniFi network via the web browser. The add-on
