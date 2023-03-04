@@ -1,0 +1,21 @@
+---
+name: Wallapop-Telegram-Bot
+version: dev
+slug: wallabot
+description: Telegram Bot of Wallapop
+url: https://github.com/koko004/hassio-repo/telegram-bot
+codenotary: koko004@gmail.com
+webui: https://web.telegram.org
+startup: services
+arch:
+  - aarch64
+  - amd64
+init: false
+backup: cold
+map:
+  - backup:rw
+hassio_api: true
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  memory_max: int?
+  memory_init: int?
