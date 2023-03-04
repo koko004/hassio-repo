@@ -2,6 +2,7 @@
 name: Wallapop-Telegram-Bot
 version: dev
 slug: wallabot
+image: hub.docker.com/r/z0r3f/wallbot-docker:latest
 description: Telegram Bot of Wallapop
 url: https://github.com/koko004/hassio-repo/telegram-bot
 codenotary: koko004@gmail.com
@@ -11,6 +12,7 @@ arch:
   - aarch64
   - amd64
 init: false
+
 backup: cold
 map:
   - backup:rw
