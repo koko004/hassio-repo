@@ -1,0 +1,4 @@
+# https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
+name: koko004 Home Assistant add-on repository
+url: 'https://github.com/koko004/hassio-repo/'
+maintainer: koko004 <koko004@gmail.com>
