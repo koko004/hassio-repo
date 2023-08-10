@@ -2,7 +2,6 @@
 build_from:
   aarch64: z0r3f/wallbot-docker:latest
   amd64: z0r3f/wallbot-docker:latest
-  armv7: z0r3f/wallbot-docker:latest
 codenotary:
   base_image: koko004@gmail.com
   signer: koko004@gmail.com
