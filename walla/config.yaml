@@ -12,7 +12,8 @@ init: false
 map:
   - share:rw
 options:
-  message: "Hello world..."
+  TELEGRAM_TOKEN: ""
+image: "z0r3f/wallbot-docker:latest"
 schema:
-  message: "str?"
-image: "ghcr.io/home-assistant/{arch}-addon-example"
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  TELEGRAM_TOKEN: str
