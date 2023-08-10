@@ -2,7 +2,10 @@
 #ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:8.2.1
 FROM python:3.8-slim-buster
 
+COPY .env /
 
+FROM dotenv import load_dotenv
+load_dotenv()
 
 RUN apt-get update && \
     apt-get install -y locales && \
@@ -26,4 +29,8 @@ COPY dbhelper.py .
 RUN mkdir /data
 RUN mkdir /logs
 
+
+
 CMD [ "python3", "./ssbo.py"]
+
+
