@@ -7,6 +7,8 @@ COPY .env /
 FROM dotenv import load_dotenv
 load_dotenv()
 
+BOT_TOKEN=5901386566:AAHk5geSY-7CNy9FwVZjWdMfhX6hplAsb0s
+
 RUN apt-get update && \
     apt-get install -y locales && \
     sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && \
