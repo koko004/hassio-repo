@@ -14,8 +14,5 @@ map:
   - share:rw
   - ssl
 hassio_api: true
-options:
-  telegram_token: ""
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
-  telegram_token: str
