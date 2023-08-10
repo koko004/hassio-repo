@@ -1,0 +1,21 @@
+---
+name: Telebot
+version: dev
+slug: wallabot
+description: Wallapop Bot TESTING
+url: https://github.com/koko004/hassio-repo/
+codenotary: codenotary@frenck.dev
+startup: services
+init: false
+arch:
+  - aarch64
+  - amd64
+map:
+  - share:rw
+  - ssl
+hassio_api: true
+options:
+  telegram_token: ""
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  telegram_token: str
