@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:8.2.1
+#ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:8.2.1
 FROM python:3.8-slim-buster
 
 
@@ -27,11 +27,3 @@ RUN mkdir /data
 RUN mkdir /logs
 
 CMD [ "python3", "./ssbo.py"]
-# Copy root filesystem
-COPY rootfs /
-
-# Copy data for add-on
-COPY run.sh /
-#RUN chmod a+x /run.sh
-RUN chmod +x /run.sh
-CMD [ "/run.sh" ]
