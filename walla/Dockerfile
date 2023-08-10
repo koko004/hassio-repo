@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-
+ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:8.2.1
 FROM python:3.8-slim-buster
 
 RUN apt-get update && \
