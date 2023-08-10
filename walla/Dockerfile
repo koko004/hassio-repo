@@ -2,6 +2,9 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:8.2.1
 FROM python:3.8-slim-buster
 
+# Copy root filesystem
+COPY rootfs /
+
 RUN apt-get update && \
     apt-get install -y locales && \
     sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && \
