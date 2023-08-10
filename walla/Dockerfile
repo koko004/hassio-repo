@@ -25,3 +25,9 @@ RUN mkdir /data
 RUN mkdir /logs
 
 CMD [ "python3", "./ssbo.py"]
+
+# Copy data for add-on
+COPY run.sh /
+RUN chmod a+x /run.sh
+
+CMD [ "/run.sh" ]
