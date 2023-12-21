@@ -1,0 +1,31 @@
+{
+  "name": "JDownloader 2",
+  "version": "0.1",
+  "slug": "jdownloader2",
+  "description": "This add-on allows you to have JDownloader 2 easily installed and controlled via MyJDownloader.",
+  "url": "https://jdownloader.org/jdownloader2",
+  "arch": ["armv7", "aarch64", "amd64"],
+  "startup": "application",
+  "boot": "auto",
+  "image": "jlesage/jdownloader-2",
+  "options": {
+    "email": "home@assistant.de",
+    "password": "fancy",
+	"device_name": "JD2 by HomeAssistant"
+  },
+  "schema": {
+    "email": "str",
+    "password": "str",
+    "device_name": "str"
+  },
+  "ports": {
+    "5800/tcp": 5800
+  },
+  "ports_description": {
+    "5800/tcp": "MyJDownloader port"
+  },
+  "map": [
+    "media:rw"
+  ],
+  "hassio_role": "default"
+}
