@@ -1,5 +1,6 @@
 FROM alpine:3.20
 
+# Instalación de dependencias
 RUN apk add --no-cache bash jq neon libxml2 libusb net-snmp-libs \
     && apk add --no-cache --virtual .build-deps \
         build-base neon-dev libxml2-dev libusb-dev net-snmp-dev \
@@ -9,8 +10,9 @@ RUN apk add --no-cache bash jq neon libxml2 libusb net-snmp-libs \
     && ./autogen.sh && ./configure --prefix=/usr --sysconfdir=/etc/nut --libexecdir=/usr/libexec/nut \
         --with-drivers=netxml-ups,usbhid-ups,snmp-ups --with-usb --with-xml --with-snmp --without-doc --without-cgi \
     && make -j$(nproc) && make install \
-    # Fuerza absoluta de ubicación del binario
-    && cp drivers/netxml-ups /usr/libexec/nut/netxml-ups \
+    # Buscamos el binario donde sea que se haya compilado y lo ponemos en su sitio
+    && mkdir -p /usr/libexec/nut \
+    && find . -name "netxml-ups" -type f -exec cp {} /usr/libexec/nut/netxml-ups \; \
     && chmod +x /usr/libexec/nut/netxml-ups \
     && cd .. && rm -rf nut-2.8.5 nut-2.8.5.tar.gz && apk del .build-deps \
     && mkdir -p /var/state/ups && chmod 0750 /var/state/ups
