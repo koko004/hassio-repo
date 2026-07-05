@@ -1,25 +1,22 @@
-STREAMING_CHUNK: Definiendo la información básica y el esquema del Add-on...
-
 name: "Network UPS Tools (Custom XML)"
 version: "1.0.0"
 slug: "custom_nut_xml"
 description: "Versión personalizada de NUT que incluye el driver netxml-ups para SAIs Eaton."
 arch:
-
-amd64
+  - amd64
 startup: services
 boot: auto
 options:
-device_name: "eaton_sai"
-driver: "netxml-ups"
-port: "http://192.168.1.100"
-username: "admin"
-password: "mysecurepassword"
+  device_name: "eaton_sai"
+  driver: "netxml-ups"
+  port: "http://192.168.1.100"
+  username: "admin"
+  password: "mysecurepassword"
 schema:
-device_name: str
-driver: str
-port: str
-username: str
-password: password
+  device_name: str
+  driver: str
+  port: str
+  username: str
+  password: password
 ports:
-3493/tcp: 3493
+  3493/tcp: 3493
