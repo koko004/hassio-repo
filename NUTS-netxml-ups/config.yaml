@@ -4,19 +4,19 @@ slug: "custom_nut_xml"
 description: "Versión personalizada de NUT que incluye el driver netxml-ups para SAIs Eaton."
 arch:
   - amd64
-init: false
+startup: services
+boot: auto
 options:
-  device_name: "EATON-5PX"
+  device_name: "eaton_sai"
   driver: "netxml-ups"
-  port: "http://192.168.1.X" # Cambia esto por la IP de tu Eaton
+  port: "http://192.168.1.100"
   username: "admin"
-  password: "tu_password_seguro"
+  password: "mysecurepassword"
 schema:
   device_name: str
   driver: str
   port: str
   username: str
-  password: str
+  password: password
 ports:
   3493/tcp: 3493
-network: true
