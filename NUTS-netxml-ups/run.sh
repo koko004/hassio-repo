@@ -2,21 +2,16 @@
 OPTIONS_FILE="/data/options.json"
 DEVICE_NAME=$(jq --raw-output '.device_name' $OPTIONS_FILE)
 DRIVER=$(jq --raw-output '.driver' $OPTIONS_FILE)
-PORT=$(jq --raw-output '.port' $OPTIONS_FILE)
+# Limpiamos el puerto para asegurar que sea solo la IP
+PORT=$(jq --raw-output '.port' $OPTIONS_FILE | sed 's|http://||' | sed 's|/||g')
 USERNAME=$(jq --raw-output '.username' $OPTIONS_FILE)
 PASSWORD=$(jq --raw-output '.password' $OPTIONS_FILE)
 
-# 1. Ajustar permisos de la carpeta de estado para que el proceso no falle
-mkdir -p /var/state/ups
-chown -R root:root /var/state/ups
-chmod 777 /var/state/ups
-
-# 2. Configurar NUT (sin forzar usuarios de sistema inexistentes)
+# Configuración de archivos
 cat << EOF > /etc/nut/ups.conf
 [$DEVICE_NAME]
     driver = $DRIVER
     port = $PORT
-    desc = "UPS Eaton"
 EOF
 
 cat << EOF > /etc/nut/upsd.conf
@@ -36,14 +31,10 @@ SHUTDOWNCMD "/sbin/shutdown -h now"
 POWERDOWNFLAG /etc/killpower
 EOF
 
-# 3. Lanzar procesos
-echo "[INFO] Iniciando driver $DRIVER..."
+chmod 640 /etc/nut/*
+
+# Ejecución
 /usr/libexec/nut/$DRIVER -D -a $DEVICE_NAME &
 sleep 5
-
-echo "[INFO] Iniciando upsd..."
 /usr/sbin/upsd -D &
-sleep 2
-
-echo "[INFO] Iniciando upsmon..."
 exec /usr/sbin/upsmon -D
