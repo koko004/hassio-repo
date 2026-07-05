@@ -1,4 +1,3 @@
-# Usamos la imagen oficial de Docker Hub en lugar de GHCR
 FROM alpine:3.20
 
 # 1. Instalar herramientas del sistema, jq, bash y librerías de ejecución
@@ -27,6 +26,7 @@ RUN apk add --no-cache \
     && curl -L https://github.com/networkupstools/nut/archive/refs/tags/v2.8.5.tar.gz -o nut-2.8.5.tar.gz \
     && tar -xzf nut-2.8.5.tar.gz \
     && cd nut-2.8.5 \
+    && export WITHOUT_NUT_AUGEAS=true \
     && ./autogen.sh \
     && ./configure \
         --prefix=/usr \
@@ -40,12 +40,12 @@ RUN apk add --no-cache \
     && make -j$(nproc) \
     && make install \
     \
-# 3. Limpieza
+# 3. Limpieza de dependencias de desarrollo
     && cd .. \
     && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
     && apk del .build-deps \
     \
-# 4. Crear directorios de estado
+# 4. Crear directorios de estado para NUT
     && mkdir -p /var/state/ups && chmod 0750 /var/state/ups
 
 # Copiar el script de inicio
