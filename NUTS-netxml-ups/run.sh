@@ -1,12 +1,15 @@
-#!/usr/bin/with-contenv bashio
+#!/bin/bash
 
-DEVICE_NAME=$(bashio::config 'device_name')
-DRIVER=$(bashio::config 'driver')
-PORT=$(bashio::config 'port')
-USERNAME=$(bashio::config 'username')
-PASSWORD=$(bashio::config 'password')
+# Leer la configuración directamente desde el JSON de Home Assistant usando jq
+OPTIONS_FILE="/data/options.json"
 
-bashio::log.info "Generando configuración de NUT..."
+DEVICE_NAME=$(jq --raw-output '.device_name' $OPTIONS_FILE)
+DRIVER=$(jq --raw-output '.driver' $OPTIONS_FILE)
+PORT=$(jq --raw-output '.port' $OPTIONS_FILE)
+USERNAME=$(jq --raw-output '.username' $OPTIONS_FILE)
+PASSWORD=$(jq --raw-output '.password' $OPTIONS_FILE)
+
+echo "[INFO] Generando configuración de NUT..."
 
 # 1. Generar /etc/nut/ups.conf
 cat << EOF > /etc/nut/ups.conf
@@ -15,7 +18,7 @@ cat << EOF > /etc/nut/ups.conf
     port = $PORT
 EOF
 
-# 2. Generar /etc/nut/upsd.conf (Escuchar en todas las interfaces del contenedor)
+# 2. Generar /etc/nut/upsd.conf
 cat << EOF > /etc/nut/upsd.conf
 LISTEN 0.0.0.0 3493
 EOF
@@ -34,20 +37,17 @@ MONITOR $DEVICE_NAME@localhost 1 $USERNAME $PASSWORD primary
 SHUTDOWNCMD "/sbin/shutdown -h now"
 EOF
 
-# Asegurar permisos correctos
 chmod 640 /etc/nut/*
 
-bashio::log.info "Iniciando el driver de NUT para $DEVICE_NAME..."
+echo "[INFO] Iniciando el driver de NUT para $DEVICE_NAME..."
 /usr/libexec/nut/$DRIVER -D -a $DEVICE_NAME &
 
-# Darle un par de segundos al driver para levantar el socket
 sleep 2
 
-bashio::log.info "Iniciando el servidor upsd..."
+echo "[INFO] Iniciando el servidor upsd..."
 /usr/sbin/upsd -D &
 
 sleep 1
 
-bashio::log.info "Iniciando el monitor upsmon..."
-# Ejecutamos el último en primer plano para que el contenedor no se cierre
+echo "[INFO] Iniciando el monitor upsmon..."
 exec /usr/sbin/upsmon -D
