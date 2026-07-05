@@ -1,5 +1,6 @@
 FROM alpine:3.20
 
+# Instalación de dependencias necesarias
 RUN apk add --no-cache \
         bash \
         jq \
@@ -20,31 +21,26 @@ RUN apk add --no-cache \
         libtool \
         autoconf \
         automake \
+    \
+# Descarga y compilación forzada
     && curl -L https://github.com/networkupstools/nut/archive/refs/tags/v2.8.5.tar.gz -o nut-2.8.5.tar.gz \
     && tar -xzf nut-2.8.5.tar.gz \
     && cd nut-2.8.5 \
-    && export WITHOUT_NUT_AUGEAS=true \
     && ./autogen.sh \
     && ./configure \
         --prefix=/usr \
         --sysconfdir=/etc/nut \
-        --libexecdir=/usr/libexec/nut \
-        --with-user=root \
-        --with-group=root \
         --with-drivers=netxml-ups,usbhid-ups,snmp-ups \
-        --with-usb \
-        --with-xml \
-        --with-snmp \
         --without-doc \
-        --without-api \
-        --without-cgi \
-        --without-ssl \
         --without-python \
         --disable-nut-scanner \
-    && make -j$(nproc) \
-    && make install \
-    && cd .. \
-    && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
+    \
+# Compilar SOLO los drivers y el servidor, ignorando librerías de escaneo
+    && cd drivers && make && make install && cd .. \
+    && cd server && make && make install && cd .. \
+    \
+# Limpieza
+    && cd .. && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
     && apk del .build-deps \
     && mkdir -p /var/state/ups && chmod 0750 /var/state/ups
 
