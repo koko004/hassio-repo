@@ -1,6 +1,5 @@
 FROM alpine:3.20
 
-# 1. Instalar herramientas del sistema, jq, bash y librerías de ejecución esenciales
 RUN apk add --no-cache \
         bash \
         jq \
@@ -21,8 +20,6 @@ RUN apk add --no-cache \
         libtool \
         autoconf \
         automake \
-    \
-# 2. Descargar y compilar NUT optimizado (sin componentes secundarios problemáticos)
     && curl -L https://github.com/networkupstools/nut/archive/refs/tags/v2.8.5.tar.gz -o nut-2.8.5.tar.gz \
     && tar -xzf nut-2.8.5.tar.gz \
     && cd nut-2.8.5 \
@@ -43,18 +40,14 @@ RUN apk add --no-cache \
         --without-cgi \
         --without-ssl \
         --without-python \
+        --disable-nut-scanner \
     && make -j$(nproc) \
     && make install \
-    \
-# 3. Limpieza profunda de dependencias de desarrollo para aligerar la imagen
     && cd .. \
-    rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
+    && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
     && apk del .build-deps \
-    \
-# 4. Crear directorios de estado para NUT
     && mkdir -p /var/state/ups && chmod 0750 /var/state/ups
 
-# Copiar el script de inicio
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
