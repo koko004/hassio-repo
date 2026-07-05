@@ -1,37 +1,36 @@
 #!/bin/bash
 OPTIONS_FILE="/data/options.json"
-
 DEVICE_NAME=$(jq --raw-output '.device_name' $OPTIONS_FILE)
 DRIVER=$(jq --raw-output '.driver' $OPTIONS_FILE)
-PORT=$(jq --raw-output '.port' $OPTIONS_FILE)
-USERNAME=$(jq --raw-output '.username' $OPTIONS_FILE)
-PASSWORD=$(jq --raw-output '.password' $OPTIONS_FILE)
+URL=$(jq --raw-output '.port' $OPTIONS_FILE)
+USER=$(jq --raw-output '.username' $OPTIONS_FILE)
+PASS=$(jq --raw-output '.password' $OPTIONS_FILE)
 
+# Crear archivos de config necesarios
 cat << EOF > /etc/nut/ups.conf
 [$DEVICE_NAME]
     driver = $DRIVER
-    port = $PORT
+    port = $URL
 EOF
-
 cat << EOF > /etc/nut/upsd.conf
 LISTEN 0.0.0.0 3493
 EOF
-
 cat << EOF > /etc/nut/upsd.users
-[$USERNAME]
-    password = $PASSWORD
+[$USER]
+    password = $PASS
     actions = SET
     instcmds = ALL
 EOF
 
-cat << EOF > /etc/nut/upsmon.conf
-MONITOR $DEVICE_NAME@localhost 1 $USERNAME $PASSWORD primary
-SHUTDOWNCMD "/sbin/shutdown -h now"
-EOF
+# Verificar existencia del driver antes de arrancar
+if [ ! -f "/usr/libexec/nut/$DRIVER" ]; then
+    echo "[ERROR] El driver $DRIVER no existe en /usr/libexec/nut/"
+    ls -l /usr/libexec/nut/
+    exit 1
+fi
 
-chmod 640 /etc/nut/*
+echo "[INFO] Arrancando $DRIVER..."
 /usr/libexec/nut/$DRIVER -D -a $DEVICE_NAME &
-sleep 2
+sleep 5
 /usr/sbin/upsd -D &
-sleep 1
 exec /usr/sbin/upsmon -D
