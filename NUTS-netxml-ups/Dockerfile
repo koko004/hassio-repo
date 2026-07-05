@@ -1,6 +1,6 @@
 FROM alpine:3.20
 
-# Instalación de dependencias necesarias
+# 1. Instalar librerias de ejecucion esenciales
 RUN apk add --no-cache \
         bash \
         jq \
@@ -8,6 +8,7 @@ RUN apk add --no-cache \
         libxml2 \
         libusb \
         net-snmp-libs \
+# 2. Instalar herramientas de compilacion (AÑADIDO PYTHON3)
     && apk add --no-cache --virtual .build-deps \
         build-base \
         neon-dev \
@@ -21,8 +22,9 @@ RUN apk add --no-cache \
         libtool \
         autoconf \
         automake \
+        python3 \
     \
-# Descarga y compilación forzada
+# 3. Descargar y compilar NUT (ahora autogen.sh funcionara perfecto)
     && curl -L https://github.com/networkupstools/nut/archive/refs/tags/v2.8.5.tar.gz -o nut-2.8.5.tar.gz \
     && tar -xzf nut-2.8.5.tar.gz \
     && cd nut-2.8.5 \
@@ -30,20 +32,27 @@ RUN apk add --no-cache \
     && ./configure \
         --prefix=/usr \
         --sysconfdir=/etc/nut \
+        --libexecdir=/usr/libexec/nut \
+        --with-user=root \
+        --with-group=root \
         --with-drivers=netxml-ups,usbhid-ups,snmp-ups \
+        --with-usb \
+        --with-xml \
+        --with-snmp \
         --without-doc \
-        --without-python \
-        --disable-nut-scanner \
+        --without-cgi \
+    && make -j$(nproc) \
+    && make install \
     \
-# Compilar SOLO los drivers y el servidor, ignorando librerías de escaneo
-    && cd drivers && make && make install && cd .. \
-    && cd server && make && make install && cd .. \
-    \
-# Limpieza
-    && cd .. && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
+# 4. Limpieza profunda (aqui se borra Python3 y los compiladores)
+    && cd .. \
+    && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
     && apk del .build-deps \
+    \
+# 5. Crear directorios de estado para NUT
     && mkdir -p /var/state/ups && chmod 0750 /var/state/ups
 
+# Copiar el script de inicio
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
