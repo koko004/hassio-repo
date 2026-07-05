@@ -1,8 +1,10 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-alpine:3.20
-FROM ${BUILD_FROM}
+# Usamos la imagen oficial de Docker Hub en lugar de GHCR
+FROM alpine:3.20
 
-# 1. Instalar librerías en tiempo de ejecución y dependencias de compilación
+# 1. Instalar herramientas del sistema, jq, bash y librerías de ejecución
 RUN apk add --no-cache \
+        bash \
+        jq \
         neon \
         libxml2 \
         libusb \
@@ -38,12 +40,12 @@ RUN apk add --no-cache \
     && make -j$(nproc) \
     && make install \
     \
-# 3. Limpieza de dependencias de desarrollo para aligerar la imagen
+# 3. Limpieza
     && cd .. \
     && rm -rf nut-2.8.5 nut-2.8.5.tar.gz \
     && apk del .build-deps \
     \
-# 4. Crear directorios de estado que NUT necesita para funcionar
+# 4. Crear directorios de estado
     && mkdir -p /var/state/ups && chmod 0750 /var/state/ups
 
 # Copiar el script de inicio
