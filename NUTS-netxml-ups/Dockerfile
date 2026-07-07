@@ -8,7 +8,7 @@ RUN apk add --no-cache bash jq neon libxml2 libusb \
     && tar -xzf nut-2.8.5.tar.gz && cd nut-2.8.5 \
     && export WITHOUT_NUT_AUGEAS=true \
     && ./autogen.sh \
-    && ./configure --prefix=/usr --sysconfdir=/etc/nut --libexecdir=/usr/libexec/nut \
+    && ./configure --prefix=/usr --sysconfdir=/etc/nut --with-drvpath=/usr/libexec/nut \
         --with-drivers=netxml-ups --with-xml --without-snmp --without-usb \
         --without-modbus --without-hidapi --without-doc --disable-nut-scanner \
     && make -j$(nproc) && make install \

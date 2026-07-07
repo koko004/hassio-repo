@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 OPTIONS_FILE="/data/options.json"
 
@@ -30,9 +29,10 @@ EOF
 cat << EOF > /etc/nut/upsmon.conf
 MONITOR $DEVICE_NAME@localhost 1 $USERNAME $PASSWORD primary
 SHUTDOWNCMD "/sbin/shutdown -h now"
+POWERDOWNFLAG /etc/killpower
 EOF
 
-chmod 640 /etc/nut/*
+chmod 644 /etc/nut/*
 
 echo "Starting driver: $DRIVER on $PORT"
 /usr/libexec/nut/$DRIVER -D -a $DEVICE_NAME &
