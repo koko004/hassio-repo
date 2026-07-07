@@ -20,6 +20,6 @@ schema:
   username: str
   password: password
 ports:
-  3493/tcp: null
+  3493/tcp: 3493
 ports_description:
   3493/tcp: NUT Server
