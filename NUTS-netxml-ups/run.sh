@@ -24,6 +24,7 @@ cat << EOF > /etc/nut/upsd.users
     password = $PASSWORD
     actions = SET
     instcmds = ALL
+    upsmon = primary
 EOF
 
 cat << EOF > /etc/nut/upsmon.conf
