@@ -1,7 +1,7 @@
 name: "Network UPS Tools (netxml-ups)"
 version: "1.0.1"
 slug: "nuts_netxml_ups"
-description: "NUT addon personalizado con driver netxml-ups para SAIs Eaton"
+description: "Custom NUT addon with netxml-ups driver for Eaton UPS. The official hassio-addons/app-nut dropped netxml-ups support (see issue #505), so this addon compiles it from source."
 arch:
   - amd64
 init: false
