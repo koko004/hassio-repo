@@ -22,12 +22,9 @@ Bot de Telegram para buscar artículos en Wallapop.
 
 ## Configuración
 
-### Opciones
-
-| Opción | Tipo | Requerido | Descripción |
-|--------|------|-----------|-------------|
-| `bot_token` | string | Sí | Token del bot de Telegram (obtenido de @BotFather) |
-| `profile` | string | No | Nombre de perfil para modo desarrollo |
+| Opción | Tipo | Descripción |
+|--------|------|-------------|
+| `bot_token` | string | Token del bot de Telegram (obtenido de @BotFather) |
 
 ## Uso del Bot
 
@@ -40,10 +37,6 @@ Bot de Telegram para buscar artículos en Wallapop.
   - Ejemplo: `/del zapatos rojos`
 - `/lis` - Listar todas las búsquedas activas
 
-## Desarrollo
+## Código fuente
 
-El código fuente está disponible en: https://github.com/koko004/wallalert-bot
-
-## Licencia
-
-MIT License
+https://github.com/koko004/wallalert-bot
