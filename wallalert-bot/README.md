@@ -1,5 +1,7 @@
 # WallAlert Bot - Home Assistant Add-on
 
+![Supports amd64 Architecture][amd64-shield]
+
 Bot de Telegram para buscar artículos en Wallapop.
 
 ## Características
@@ -40,3 +42,5 @@ Bot de Telegram para buscar artículos en Wallapop.
 ## Código fuente
 
 https://github.com/koko004/wallalert-bot
+
+[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
