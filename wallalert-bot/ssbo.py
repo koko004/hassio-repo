@@ -22,17 +22,14 @@ def load_config():
         import json
         with open(config_path, 'r') as f:
             config = json.load(f)
-        return config.get("bot_token", ""), config.get("profile")
-    return os.getenv("BOT_TOKEN", "Bot Token does not exist"), os.getenv("PROFILE")
+        return config.get("bot_token", "")
+    return os.getenv("BOT_TOKEN", "Bot Token does not exist")
 
-TOKEN, PROFILE = load_config()
+TOKEN = load_config()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 URL_ITEMS = "https://api.wallapop.com/api/v3/search?source=search_box"
 
-if PROFILE is None:
-    db = DBHelper()
-else:
-    db = DBHelper("db.sqlite")
+db = DBHelper()
 
 
 ICON_VIDEO_GAMES = u'\U0001F3AE'  # 🎮
@@ -240,9 +237,7 @@ def add_search(message):
 #     print('echo: "' + message.text + '"')
 #     bot.reply_to(message, message.text)
 
-pathlog = 'wallbot.log'
-if PROFILE is None:
-    pathlog = '/logs/' + pathlog
+pathlog = '/logs/wallbot.log'
 
 log_format = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(
