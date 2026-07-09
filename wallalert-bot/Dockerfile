@@ -1,26 +1,27 @@
 # syntax=docker/dockerfile:1
-ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:latest
-FROM ${BUILD_FROM}
+FROM ghcr.io/home-assistant/base:latest
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    locales \
+RUN \
+  apk add --no-cache \
     python3 \
-    python3-pip \
-    python3-venv && \
-    sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && \
-    dpkg-reconfigure --frontend=noninteractive locales && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    py3-pip \
+    py3-virtualenv \
+    tzdata
 
-ENV LANG es_ES.UTF-8
-ENV LC_ALL es_ES.UTF-8
-ENV TZ Europe/Madrid
+RUN \
+  apk add --no-cache --virtual .build-deps \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev
 
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
 RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
+
+RUN apk del .build-deps
 
 COPY ssbo.py .
 COPY dbhelper.py .
