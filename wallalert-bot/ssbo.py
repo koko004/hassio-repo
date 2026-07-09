@@ -13,11 +13,21 @@ import sys
 import threading
 import os
 import locale
+from fake_useragent import UserAgent
 
-TOKEN = os.getenv("BOT_TOKEN", "Bot Token does not exist")
+def load_config():
+    """Load configuration from Home Assistant options or environment variables."""
+    config_path = "/data/options.json"
+    if os.path.exists(config_path):
+        import json
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        return config.get("bot_token", ""), config.get("profile")
+    return os.getenv("BOT_TOKEN", "Bot Token does not exist"), os.getenv("PROFILE")
+
+TOKEN, PROFILE = load_config()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-URL_ITEMS = "https://api.wallapop.com/api/v3/general/search"
-PROFILE = os.getenv("PROFILE")
+URL_ITEMS = "https://api.wallapop.com/api/v3/search?source=search_box"
 
 if PROFILE is None:
     db = DBHelper()
@@ -56,7 +66,7 @@ def notel(chat_id, price, title, url_item, obs=None):
 
 def get_url_list(search):
     url = URL_ITEMS
-    url += '?keywords='
+    url += '&keywords='
     url += "+".join(search.kws.split(" "))
     url += '&time_filter=today'
     if search.cat_ids is not None:
@@ -79,33 +89,61 @@ def get_url_list(search):
 
 def get_items(url, chat_id):
     try:
-        resp = requests.get(url=url)
-        data = resp.json()
-        # print(data)
-        for x in data['search_objects']:
-            # print('\t'.join((datetime.datetime.today().strftime('%Y-%m-%d %H:%M'),
-            #                  str(x['id']), str(x['price']), x['title'], x['user']['id'])))
-            # logging.info('\t'.join((str(x['id']), str(x['price']), x['title'], x['user']['id'])))
-            logging.info('Encontrado: id=%s, price=%s, title=%s, user=%s',str(x['id']), locale.currency(x['price'], grouping=True), x['title'], x['user']['id'])
-            i = db.search_item(x['id'], chat_id)
-            if i is None:
-                db.add_item(x['id'], chat_id, x['title'], x['price'], x['web_slug'], x['user']['id'])
-                notel(chat_id, x['price'], x['title'], x['web_slug'])
-                logging.info('New: id=%s, price=%s, title=%s', str(x['id']), locale.currency(x['price'], grouping=True), x['title'])
-            else:
-                # Si está comparar precio...
-                money = str(x['price'])
-                value_json = Decimal(sub(r'[^\d.]', '', money))
-                value_db = Decimal(sub(r'[^\d.]', '', i.price))
-                if value_json < value_db:
-                    new_obs = locale.currency(i.price, grouping=True)
-                    if i.observaciones is not None:
-                        new_obs += ' < '
-                        new_obs += i.observaciones
-                    db.update_item(x['id'], money, new_obs)
-                    obs = ' < ' + new_obs
-                    notel(chat_id, x['price'], x['title'], x['web_slug'], obs)
-                    logging.info('Baja: id=%s, price=%s, title=%s', str(x['id']), locale.currency(x['price'], grouping=True), x['title'])
+   
+        ua = UserAgent()
+
+        headers = {
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'es,ru;q=0.9,en;q=0.8,de;q=0.7,pt;q=0.6',
+            'Connection': 'keep-alive',
+            'DeviceOS': '0',
+            'Origin': 'https://es.wallapop.com',
+            'Referer': 'https://es.wallapop.com/',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-site',
+            'User-Agent': f'{ua.random}',
+            'X-AppVersion': '75491',
+            'X-DeviceOS': '0',
+            'sec-ch-ua-mobile': '?0',
+        }
+
+        response = requests.get(url=url, headers=headers)
+        
+        if response.status_code == 200:
+            data = response.json()
+
+            items = data.get('data', {}).get('section', {}).get('payload', {}).get('items', [])
+
+            for x in items:
+                logging.info('Encontrado: id=%s, price=%s, title=%s, user=%s',
+                             str(x['id']),
+                             locale.currency(x['price']['amount'], grouping=True),
+                             x['title'],
+                             x['user_id'])
+
+                i = db.search_item(x['id'], chat_id)
+                
+                if i is None:
+                    db.add_item(x['id'], chat_id, x['title'], x['price']['amount'], x['web_slug'], x['user_id'])
+                    notel(chat_id, x['price']['amount'], x['title'], x['web_slug'])
+                    logging.info('New: id=%s, price=%s, title=%s', str(x['id']), locale.currency(x['price']['amount'], grouping=True), x['title'])
+                else:
+                    money = str(x['price']['amount'])
+                    value_json = Decimal(sub(r'[^\d.]', '', money))
+                    value_db = Decimal(sub(r'[^\d.]', '', i.price))
+                    
+                    if value_json < value_db:
+                        new_obs = locale.currency(i.price, grouping=True)
+                        if i.observaciones is not None:
+                            new_obs += ' < ' + i.observaciones
+                        db.update_item(x['id'], money, new_obs)
+                        obs = ' < ' + new_obs
+                        notel(chat_id, x['price']['amount'], x['title'], x['web_slug'], obs)
+                        logging.info('Baja: id=%s, price=%s, title=%s', str(x['id']), locale.currency(x['price']['amount'], grouping=True), x['title'])
+        else:
+            logging.error(f"Failed to fetch data: {response.status_code}")
+
     except Exception as e:
         logging.error(e)
 
@@ -114,6 +152,7 @@ def handle_exception(self, exception):
     logging.exception(exception)
     logging.error("Ha ocurrido un error con la llamada a Telegram. Se reintenta la conexión")
     print("Ha ocurrido un error con la llamada a Telegram. Se reintenta la conexión")
+    bot.remove_webhook()
     bot.polling(none_stop=True, timeout=3000)
 
 
@@ -186,7 +225,7 @@ def add_search(message):
         if len(rango) > 1:
             cs.max_price = rango[1].strip()
     if len(token) > 2:
-        cs.cat_ids = sub('[\s+]', '', ','.join(token[2:]))
+        cs.cat_ids = sub(r'[\s+]', '', ','.join(token[2:]))
         if len(cs.cat_ids) == 0:
             cs.cat_ids = None
     cs.username = message.from_user.username
@@ -205,11 +244,16 @@ pathlog = 'wallbot.log'
 if PROFILE is None:
     pathlog = '/logs/' + pathlog
 
+log_format = '%(asctime)s %(levelname)s %(message)s'
 logging.basicConfig(
-    handlers=[RotatingFileHandler(pathlog, maxBytes=1000000, backupCount=10)],
-#    filename='wallbot.log',
     level=logging.INFO,
-    format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+    format=log_format,
+    datefmt='%m/%d/%Y %H:%M:%S',
+    handlers=[
+        RotatingFileHandler(pathlog, maxBytes=1000000, backupCount=10),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')
 
@@ -241,26 +285,85 @@ def wallapop():
         continue
 
 
+def verify_token():
+    try:
+        response = requests.get(f"{URL}getMe", timeout=10)
+        data = response.json()
+        if data.get("ok"):
+            bot_info = data.get("result", {})
+            logging.info("Token valido. Bot: @%s (ID: %s)", bot_info.get("username"), bot_info.get("id"))
+            return True
+        else:
+            error_code = data.get("error_code", "unknown")
+            description = data.get("description", "unknown")
+            logging.error("Token invalido. Error %s: %s", error_code, description)
+            return False
+    except Exception as e:
+        logging.error("No se pudo verificar el token: %s", e)
+        return False
+
+
+def start_polling():
+    logging.info("Polling thread iniciado")
+    try:
+        bot.polling(none_stop=True, timeout=3000)
+        logging.warning("Polling termino inesperadamente (retorno sin error)")
+    except telebot.apihelper.ApiTelegramException as e:
+        if e.error_code == 409:
+            logging.error("CONFLICTO: El token esta siendo usado por otra instancia. Deteniendo...")
+            sys.exit(1)
+        else:
+            logging.error("Error de Telegram (code %s): %s", e.error_code, e.description)
+    except Exception as e:
+        logging.error("Error inesperado en polling: %s", e)
+    logging.error("Polling thread finalizado")
+
+
 def recovery(times):
     try:
         time.sleep(times)
-        logging.info("Conexión a Telegram.")
-        print("Conexión a Telegram")
-        bot.polling(none_stop=True, timeout=3000)
+        logging.info("Iniciando polling de Telegram...")
+        t = threading.Thread(target=start_polling, daemon=True)
+        t.start()
+        time.sleep(3)
+        if t.is_alive():
+            logging.info("Conexion con Telegram exitosa. Bot activo y escuchando mensajes.")
+        else:
+            logging.error("El polling se detuvo inesperadamente.")
+            if times > 16:
+                times = 16
+            recovery(times * 2)
     except Exception as e:
-        logging.error("Ha ocurrido un error con la llamada a Telegram. Se reintenta la conexión", e)
-        print("Ha ocurrido un error con la llamada a Telegram. Se reintenta la conexión")
+        logging.error("Error al iniciar conexion: %s. Reintentando...", e)
         if times > 16:
             times = 16
-        recovery(times*2)
+        recovery(times * 2)
 
 
 def main():
-    print("JanJanJan starting...")
-    logging.info("JanJanJan starting...")
+    logging.info("=== Iniciando WallAlert Bot ===")
+    logging.info("Version: %s", readVersion())
+
+    if TOKEN == "Bot Token does not exist":
+        logging.error("BOT_TOKEN no configurado. Saliendo...")
+        sys.exit(1)
+
+    logging.info("Verificando token...")
+    if not verify_token():
+        logging.error("Token invalido o en uso por otra instancia. Saliendo...")
+        sys.exit(1)
+
+    logging.info("Configurando base de datos...")
     db.setup(readVersion())
-    threading.Thread(target=wallapop).start()
+
+    logging.info("Iniciando busquedas en Wallapop...")
+    threading.Thread(target=wallapop, daemon=True).start()
+
+    logging.info("Bot listo y conectado.")
     recovery(1)
+
+    while True:
+        time.sleep(60)
 
 
 def readVersion():
