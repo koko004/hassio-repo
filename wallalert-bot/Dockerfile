@@ -23,6 +23,7 @@ RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
 RUN apk del .build-deps
 
+COPY VERSION .
 COPY ssbo.py .
 COPY dbhelper.py .
 
