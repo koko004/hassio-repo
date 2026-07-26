@@ -1,0 +1,46 @@
+name: "Cloudflared Web UI"
+version: "1.0.0"
+slug: "cloudflared_web"
+description: "Web UI for managing Cloudflare Tunnels (cloudflared) with a modern Vue.js interface"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+host_network: false
+init: false
+boot: auto
+startup: services
+options:
+  token: ""
+  start: false
+  webui_port: 14333
+  metrics_enable: false
+  metrics_port: 60123
+  basic_auth_user: "admin"
+  basic_auth_pass: ""
+  edge_bind_address: ""
+  grace_period: ""
+  region: ""
+  retries: ""
+  edge_ip_version: ""
+  protocol: ""
+schema:
+  token: str
+  start: bool
+  webui_port: port
+  metrics_enable: bool
+  metrics_port: port
+  basic_auth_user: str
+  basic_auth_pass: password
+  edge_bind_address: str
+  grace_period: str
+  region: str
+  retries: str
+  edge_ip_version: str
+  protocol: str
+ports:
+  14333/tcp: 14333
+  60123/tcp: 60123
+ports_description:
+  14333/tcp: Web UI
+  60123/tcp: Metrics (optional)
